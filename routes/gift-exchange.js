@@ -1,7 +1,7 @@
 const express = require("express")
 const { BadRequestError } = require("../utils/errors")
 const router = express.Router()
-
+const GiftExchange = require("../models/gift-exchange")
 
 router.get("/", async (req,res,next) => {
     res.status(200).json() 
@@ -10,21 +10,26 @@ router.get("/", async (req,res,next) => {
 router.post("/pairs", async(req,res,next) => {
     try{
         if(req.body.names){
-            res.status(200).json()
+            const pairs = await GiftExchange.pairs(req.body.names)
+            res.status(200).json(pairs)
         }else{
-            next(BadRequestError)
+            throw new BadRequestError
         }
     }catch(err){
-        next(BadRequestError)
+        next(err)
     }
 })
 
 router.post("/traditional", async(req,res,next) => {
     try{
-        res.status(200).json()
+        if(req.body.names){
+            const traditional = await GiftExchange.traditional(req.body.names)
+            res.status(200).json(traditional)
+        }else{
+            throw new BadRequestError
+        }
     }catch(err){
-        next(BadRequestError)
+        next(err)
     }
 }) 
-
 module.exports = router 
